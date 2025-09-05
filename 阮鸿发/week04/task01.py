@@ -13,9 +13,9 @@ dataset_df = pd.read_csv('作业数据-waimai_10k.csv', sep=',', header=0)
 # 初始化 LabelEncoder，用于将文本标签转换为数字标签
 lbl = LabelEncoder()
 # 拟合数据并转换前500个标签，得到数字标签
-labels = lbl.fit_transform(dataset_df['label'].values[:500])
+labels = lbl.fit_transform(dataset_df['label'].values)
 # 提取前500个文本内容
-texts = list(dataset_df['review'].values[:500])
+texts = list(dataset_df['review'].values)
 
 # 分割数据为训练集和测试集
 x_train, x_test, train_labels, test_labels = train_test_split(
