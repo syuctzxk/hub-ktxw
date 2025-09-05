@@ -28,7 +28,7 @@ x_train, x_test, train_labels, test_labels = train_test_split(
 # 从预训练模型加载分词器和模型
 tokenizer = AutoTokenizer.from_pretrained('google-bert/bert-base-chinese')
 model = AutoModelForSequenceClassification.from_pretrained(
-    'google-bert/bert-base-chinese', num_labels=12 # 判别式模型，分多少类
+    'google-bert/bert-base-chinese', num_labels=2 # 判别式模型，分多少类
 )
 
 # 使用分词器对训练集和测试集的文本进行编码
@@ -62,7 +62,7 @@ def compute_metrics(eval_pred):
 # 配置训练参数
 training_args = TrainingArguments(
     output_dir='./assets/weights/bert/', # 训练输出目录，用于保存模型和状态
-    num_train_epochs=4,                  # 训练的总轮数
+    num_train_epochs=2,                  # 训练的总轮数
     per_device_train_batch_size=16,      # 训练时每个设备（GPU/CPU）的批次大小
     per_device_eval_batch_size=16,       # 评估时每个设备的批次大小
     warmup_steps=500,                    # 学习率预热的步数，有助于稳定训练
