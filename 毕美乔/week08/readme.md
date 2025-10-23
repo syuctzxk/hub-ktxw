@@ -23,4 +23,4 @@ autodl账号id 提交为作业，方面老师共享镜像。（本地有环境�
 - 部署代码
   [app](./app.py)
 - 部署效果截图
-  ![fastAPI](fastAPI.png)
+  ![fastAPI](./fastAPI.png)
