@@ -59,5 +59,18 @@
 创建一个知识库，上传一些文档，在dify实现基于文档的问答。  
 作业地址 [汽车知识问答助手](./汽车知识问答助手.yml)
 运行结果展示：  
-![运行展示](task3.png)
-
+![运行展示](task3.png)  
+通过url访问服务：  
+命令入下：  
+```
+curl -X POST http://localhost:5001/v1/chat-messages \
+  -H "Authorization: Bearer app-wi0Fs4MHcVF88OE15qlcCH2g" \
+  -H "Content-Type: application/json" \
+  --data-raw '{
+    "inputs": {},
+    "query": "汽车发动机的主要部件有哪些？",
+    "response_mode": "blocking",
+    "conversation_id": "",
+    "user": "abc-123"
+      }'
+```
