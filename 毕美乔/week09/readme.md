@@ -64,7 +64,7 @@
 命令入下：  
 ```
 curl -X POST http://localhost:5001/v1/chat-messages \
-  -H "Authorization: Bearer app-wi0Fs4MHcVF88OE15qlcCH2g" \
+  -H "Authorization: Bearer <tocken>" \
   -H "Content-Type: application/json" \
   --data-raw '{
     "inputs": {},
