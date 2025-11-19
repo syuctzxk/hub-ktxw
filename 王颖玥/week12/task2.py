@@ -99,7 +99,6 @@ client = AsyncOpenAI(
 async def sentiment_classification(text: Annotated[str, "Sentence requiring emotional analysis"]):
     """Analyze the emotional tendency of the text.[type: tool]"""
     try:
-
         completion = await client.chat.completions.create(
             model="qwen-flash",
             messages=[
