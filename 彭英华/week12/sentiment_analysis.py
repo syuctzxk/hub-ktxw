@@ -8,14 +8,17 @@ import json
 @mcp.tool
 def text_sentiment_analysis(text:Annotated[str,"需要进行情感分析的文本"])->str:
     """调用大模型进行文本情感分析"""
-    model = OpenAI(base_url="https://dashscope.aliyuncs.com/compatible-mode/v1",
-                   api_key="sk-90aa2b7df82745f3a46373cc0ddd0497")
-    messages = [{"role": "system", "content": "你是一个文本情感分析专家"},
-                {"role": "user", "content": f"""
-                  请对下面的文本进行情感分析，并将其分类为积极，消极，中性三种结果,
-                  {text}"""}]
-    response = model.chat.completions.create(model="qwen-plus", messages=messages)
-    return response.choices[0].message.content
+    try:
+      model = OpenAI(base_url="https://dashscope.aliyuncs.com/compatible-mode/v1",
+                     api_key="sk-90aa2b7df82745f3a46373cc0ddd0497")
+      messages = [{"role": "system", "content": "你是一个文本情感分析专家"},
+                  {"role": "user", "content": f"""
+                    请对下面的文本进行情感分析，并将其分类为积极，消极，中性三种结果,
+                    {text}"""}]
+      response = model.chat.completions.create(model="qwen-plus", messages=messages)
+      return response.choices[0].message.content
+    except Exception as e:
+      return "无法进行文本情感分析"
 @mcp.tool
 def text_snownlp(text:Annotated[str,"需要进行情感分析的文本"]):
     """使用snownlp库进行文本情感分析"""
@@ -30,9 +33,9 @@ def text_snownlp(text:Annotated[str,"需要进行情感分析的文本"]):
     return result
 @mcp.tool
 def text_baiduyun(text:Annotated[str,"需要进行情感分析的文本"]):
-    """使用百度云进行文本情感分析"""
-    access_token = "24.52b62f6e33d2a5878f8e2a5c8b301139.2592000.1766114214.282335-120906486"
+    """使用百度云的文本情感分析接口进行文本情感分析"""
     # 使用获取到的Access Token
+    access_token = "24.52b62f6e33d2a5878f8e2a5c8b301139.2592000.1766114214.282335-120906486"
     headers = {'Content-Type': 'application/json'}
     payload = {
         'text': text
@@ -40,7 +43,6 @@ def text_baiduyun(text:Annotated[str,"需要进行情感分析的文本"]):
     # 情感分析API的URL
     emotion_url = 'https://aip.baidubce.com/rpc/2.0/nlp/v1/sentiment_classify'
     params = {'access_token': access_token}
-    # 发送请求，进行情感分析
     response = requests.post(emotion_url, params=params, data=json.dumps(payload), headers=headers)
     if response:
         analysis_result = response.json()
