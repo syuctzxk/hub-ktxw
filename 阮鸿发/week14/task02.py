@@ -11,7 +11,7 @@ from typing import Union
 from sympy import sympify, SympifyError
 from sympy.parsing.latex import parse_latex
 from fastmcp import FastMCP
-from sentence_transformers import SentenceTransformer, util
+
 
 
 # LOCAL_EMBED_MODEL_PATH = "../../../models/google-bert/bert-base-chinese"
