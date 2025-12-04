@@ -38,7 +38,7 @@ async def run(mcp_server:MCPServer):
                                                    openai_client=exteral_client),
                   model_settings=ModelSettings(parallel_tool_calls=False)
                   )
-    result =  Runner.run_streamed(agent,question)
+    result =  Runner.run_streamed(agent,query)
     async for event in result.stream_events():
         if event.type == "raw_response_event":
             if isinstance(event.data, ResponseTextDeltaEvent):  # 如果是大模型的回答
