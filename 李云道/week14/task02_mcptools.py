@@ -171,7 +171,9 @@ def get_multi_input_dynamic_system(
 async def ping():
     async with Client(mcp) as client:
         tools_list = await client.list_tools()
-        tls = '"' + '","'.join([tool.name for tool in tools_list]) + '"'
+        tls={}
+        for i,tool in enumerate(tools_list):
+            tls[i]=tool.name
         print(tls)
 
 if __name__ == '__main__':
