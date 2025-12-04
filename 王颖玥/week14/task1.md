@@ -63,7 +63,7 @@
 
    - `formula-retrieval`：返回核心数学模型
 
-     直接使用大模型进行公示提取
+     直接使用大模型进行公式提取
 
    - `conclusion_derivation`：基于模型进行逻辑的推断
 
