@@ -24,12 +24,8 @@ RAG（检索增强生成）系统的核心实现，负责文档内容提取、�
 
 device = config["device"]
 
-# 存储嵌入模型和重排序模型的全局字典（加载后的数据存这里）
-# 第一个 Any：代表字典的键 (key) 可以是任意类型
-# 第二个 Any：代表字典的值 (value) 也可以是任意类型
 EMBEDDING_MODEL_PARAMS: Dict[Any, Any] = {}
 
-# RAG提示词模板（用于告诉LLM如何基于检索到的资料回答问题）
 BASIC_QA_TEMPLATE = '''现在的时间是{#TIME#}。你是一个专家，你擅长回答用户提问，帮我结合给定的资料，回答下面的问题。
 严格按照如下规则输出：
 1. 如果问题无法从资料中获得，或无法从资料中进行回答，请回答无法回答。
@@ -75,19 +71,13 @@ def load_rerank_model(model_name: str, model_path: str) -> None:
     :return:
     """
     global EMBEDDING_MODEL_PARAMS
-    # 如果是BGE重排序模型
     if model_name in ["bge-reranker-base"]:
-        # 加载重排序模型（分类任务模型，输出相关性分数）
         EMBEDDING_MODEL_PARAMS["rerank_model"] = AutoModelForSequenceClassification.from_pretrained(model_path)
-        # 加载对应的分词器（将文本转为模型能理解的token）
         EMBEDDING_MODEL_PARAMS["rerank_tokenizer"] = AutoTokenizer.from_pretrained(model_path)
-        # 切换模型到评估模式（关闭dropout等训练相关层）
         EMBEDDING_MODEL_PARAMS["rerank_model"].eval()
         EMBEDDING_MODEL_PARAMS["rerank_model"].to(device)
 
 
-# 自动加载模型
-# 如果配置中启用了嵌入功能（use_embedding: true）
 if config["rag"]["use_embedding"]:
     # 获取当前使用的嵌入模型名称
     model_name = config["rag"]["embedding_model"]
@@ -97,7 +87,6 @@ if config["rag"]["use_embedding"]:
     print(f"Loading embedding model {model_name} from model_path...")
     load_embdding_model(model_name, model_path)
 
-# 如果配置中启用了重排序功能（use_rerank: true）
 if config["rag"]["use_rerank"]:
     model_name = config["rag"]["rerank_model"]
     model_path = config["models"]["rerank_model"][model_name]["local_url"]
@@ -165,8 +154,6 @@ class RAG:
             with open(md_path, "r", encoding="utf-8") as f:
                 md_content = f.read()
 
-            # 2. 第一步：按标题拆分（保留标题层级）
-            # 定义要识别的标题格式（key是Markdown标题符号，value是在元数据中存储的键名）
             headers_to_split_on = [
                 ("#", "一级标题"),
                 ("##", "二级标题"),
@@ -176,8 +163,6 @@ class RAG:
             markdown_splitter = MarkdownHeaderTextSplitter(headers_to_split_on=headers_to_split_on)
             docs = markdown_splitter.split_text(md_content)
 
-            # 3. 第二步：对过长的内容进一步拆分（比如长段落、长列表）
-            # 配置分块参数（中文建议chunk_size=300-500，重叠50字）
             text_splitter = RecursiveCharacterTextSplitter(
                 chunk_size=self.chunk_size,    # 每块最大300字
                 chunk_overlap=self.chunk_overlap,  # 相邻块重叠50字
@@ -192,12 +177,12 @@ class RAG:
             for chunk_idx in range(1, len(chunks) + 1):
                 chunk_data = {
                     "document_id": document_id,
-                    "chunk_id": chunk_idx,   # 表示分块编号
-                    "chunk_content": chunks[chunk_idx - 1].page_content,  # 当前分块内容
+                    "chunk_id": chunk_idx,  
+                    "chunk_content": chunks[chunk_idx - 1].page_content, 
                     "chunk_images": [],
                     "chunk_tables": [],
-                    "embedding_vector": embedding_vector[chunk_idx - 1],  # 对应分块的向量
-                    "metadata": chunks[chunk_idx - 1].metadata  # 包含一级标题、二级标题等
+                    "embedding_vector": embedding_vector[chunk_idx - 1], 
+                    "metadata": chunks[chunk_idx - 1].metadata 
                 }
                 es.index(index="chunk_info", document=chunk_data)
 
@@ -353,13 +338,9 @@ class RAG:
                 # 按分数从高到低排序，获取索引
                 rerank_idx = np.argsort(rerank_score)[::-1][:5]
 
-                # 按重排序后的索引更新结果
-                # 排序后的文档块完整记录（含 ID、内容、页码等元数据）
                 sorted_records = [sorted_records[x] for x in rerank_idx]
-                # 排序后的文档块纯文本内容（从 sorted_records 中提取）
                 sorted_content = [sorted_content[x] for x in rerank_idx]
 
-        # 返回排序后的文档块详细信息（包含内容、页码、文档ID等）
         return sorted_records
 
     # RAG 聊天
@@ -406,12 +387,11 @@ class RAG:
     def chat(self, messages: List[Message], top_p: float, temperature: float) -> Any:
         # 调用OpenAI格式的LLM API，生成回答
         completion = self.client.chat.completions.create(
-            model=self.llm_model,  # 使用的LLM模型
-            messages=messages,  # 消息列表（包含角色和内容）
-            top_p=top_p,  # 采样参数（控制输出多样性，0.9表示保留90%概率的词）
-            temperature=temperature  # 温度参数（越高越随机，0.7适中）
+            model=self.llm_model,
+            messages=messages, 
+            top_p=top_p, 
+            temperature=temperature 
         )
-        # 返回LLM生成的第一条回答（通常只取第一个候选）
         return completion.choices[0].message
 
 
