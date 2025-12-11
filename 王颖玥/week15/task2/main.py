@@ -10,9 +10,9 @@ import uvicorn  # 运行FastAPI服务的服务器
 from fastapi import FastAPI, File, UploadFile, Form, BackgroundTasks  # FastAPI核心组件
 
 from router_schemas import (
-    EmbeddingRequest, EmbeddingResponse,  # 语义嵌入的请求/响应格式
-    RerankRequest, RerankResponse,        # 重排序的请求/响应格式
-    RAGRequest, RAGResponse               # RAG聊天的请求/响应格式
+    EmbeddingRequest, EmbeddingResponse,  
+    RerankRequest, RerankResponse,        
+    RAGRequest, RAGResponse               
 )
 from rag_api import RAG  # 核心RAG功能（语义嵌入、检索、生成回答等）
 
@@ -20,7 +20,6 @@ app = FastAPI()  # 创建FastAPI应用实例
 
 
 # 语义嵌入接口
-# 将输入的文本（可以是单个句子或多个句子）转换为语义嵌入向量（数值数组）
 @app.post("/v1/embedding")
 async def semantic_embedding(req: EmbeddingRequest) -> EmbeddingResponse:
     start_time = time.time()
@@ -44,12 +43,9 @@ async def semantic_embedding(req: EmbeddingRequest) -> EmbeddingResponse:
 
 
 # 重排序接口
-# 对 “文本对”（比如 “查询文本” 和 “候选文档片段”）进行相关性评分，用于优化检索结果排序
 @app.post("/v1/rerank")
 async def semantic_rerank(req: RerankRequest) -> RerankResponse:
     start_time = time.time()
-    # 调用RAG模块的“重排序”函数，输入“文本对列表”（比如[["RAG怎么用？", "RAG的使用步骤是..."], ...]）
-    # 输出“分数数组”（每个文本对的相关性分数）
     vector: np.ndarray = RAG().get_rank(req.text_pair)
 
     return RerankResponse(
@@ -64,12 +60,9 @@ async def semantic_rerank(req: RerankRequest) -> RerankResponse:
 
 rag = RAG()
 # RAG聊天接口
-# 结合指定知识库（knowledge_id）的内容，回答用户的问题（message），这是 RAG 系统的核心功能
 @app.post("/chat")
 def chat(req: RAGRequest) -> RAGResponse:
     start_time = time.time()
-    # 调用RAG模块的“聊天函数”：传入“知识库ID”（从哪个知识库找内容）和“用户问题”
-    # 返回“基于知识库生成的回答”
     message = rag.chat_with_rag(req.message)
 
     return RAGResponse(
@@ -83,11 +76,10 @@ def chat(req: RAGRequest) -> RAGResponse:
 
 
 if __name__ == "__main__":
-    # 用uvicorn运行FastAPI服务
     uvicorn.run(
-        app,  # 要运行的API实例
-        host="0.0.0.0",  # 允许所有设备访问（比如同一局域网的电脑能访问）
-        port=config["rag"]["port"],  # 端口号从配置文件拿（比如8000）
-        workers=1  # 用1个进程运行（简单场景够用，高并发时可加多个）
+        app,  
+        host="0.0.0.0",  
+        port=config["rag"]["port"], 
+        workers=1 
     )
 
