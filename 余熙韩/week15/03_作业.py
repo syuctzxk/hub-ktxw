@@ -1,6 +1,6 @@
 import asyncio
 import os
-os.environ["OPENAI_API_KEY"] = "sk-0fce7eb19bc042469a27ea5005b65635"
+os.environ["OPENAI_API_KEY"] = "sk-0fce7eb19bc042469a27ea5005b6565"
 os.environ["OPENAI_BASE_URL"] = "https://dashscope.aliyuncs.com/compatible-mode/v1"
 
 import json
