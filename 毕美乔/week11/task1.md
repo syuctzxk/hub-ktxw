@@ -406,4 +406,52 @@ embedding 生成
       
       </div>
 
+- Response
+  - 成功响应示例
+    ```json
+    {
+      "answer": "根据图3显示，风速最大的区域位于图像右上角的红色区域，对应于沿海高地。",
+      "confidence": 0.82,
+      "sources": [
+        {
+          "document_id": "doc_20240101",
+          "document_title": "区域风场分析报告",
+          "page": 5,
+          "chunk_id": "chunk_005",
+          "type": "image+text",
+          "excerpt": "图3显示了不同区域的风速分布，红色区域代表最大风速。",
+          "image_id": "img_003",
+          "figure_caption": "图3 不同区域风速分布图"
+        }
+      ]
+    }
 
+  	```
+    
+  - 字段解释
+    - answer
+      - 最终生成的自然语言回答
+      - 应该是 推理后的结果，而非直接摘抄
+    - confidence（可选但推荐）
+      - 模型对回答的置信度（0–1）
+        可基于：
+          - 检索相似度
+          - 多源一致性
+          - LLM self-eval
+    - sources（可解释性核心）
+      - 每个 source 至少包含：
+        <div align="center">
+			
+		| 字段             | 说明                        |
+		| -------------- | ------------------------- |
+		| document_id    | 文档唯一 ID                   |
+		| document_title | 文档标题                      |
+		| page           | 页码                        |
+		| chunk_id       | chunk ID                  |
+		| type           | text / image / image+text |
+		| excerpt        | 相关文本摘要                    |
+		| image_id       | 若有关联图像                    |
+		| figure_caption | 图像说明                      |
+        </div>
+
+    📌 这是评测中“可解释性”的关键加分点
